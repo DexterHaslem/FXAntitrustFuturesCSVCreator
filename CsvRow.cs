@@ -17,7 +17,7 @@ namespace FXAntiTrustFuturesCSVCreator
         Spot,
         Forward,
         Swap,
-        OTCOption,
+        OtcOption,
         Future,
         OptionOnFuture
     }

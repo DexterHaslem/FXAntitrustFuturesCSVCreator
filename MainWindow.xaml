@@ -5,8 +5,46 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FXAntiTrustFuturesCSVCreator"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="FX Antitrust CSV tool (FUTURES ONLY)" Height="550" Width="925">
     <Grid>
-        
+        <Grid.RowDefinitions>
+
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Row="0">
+        </Grid>
+
+        <ListView Grid.Row="2" ItemsSource="{Binding Rows}">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" />
+                    <GridViewColumn Header="Claimant ID" DisplayMemberBinding="{Binding ClaimantId}" />
+                    <GridViewColumn Header="Broker/FCM" DisplayMemberBinding="{Binding BrokerFcm}" />
+                    <GridViewColumn Header="Exchange" DisplayMemberBinding="{Binding ExchangeName}" />
+                    <!--                    <GridViewColumn Header="Transaction ID" DisplayMemberBinding="{Binding TransactionId}" />-->
+                    <GridViewColumn Header="Date" DisplayMemberBinding="{Binding CalendarDate}" />
+                    <GridViewColumn Header="Timezone" DisplayMemberBinding="{Binding TimezoneIana}" />
+                    <GridViewColumn Header="Contract Code" DisplayMemberBinding="{Binding ExchangeProductCode}" />
+                    <GridViewColumn Header="Trade Rate" DisplayMemberBinding="{Binding TradeRate}" />
+                    <GridViewColumn Header="#Contracts" DisplayMemberBinding="{Binding NumberOfContracts}" />
+                    <!-- hard coded to usd -->
+                    <!--                    <GridViewColumn Header="Base Currency" DisplayMemberBinding="{Binding BaseCurrency}" />-->
+                    <!--                    <GridViewColumn Header="Quoted Currency" DisplayMemberBinding="{Binding QuotedCurrency}" />-->
+                    <GridViewColumn Header="Buy/Sell" DisplayMemberBinding="{Binding BuySell}" />
+                    <!-- calculated -->
+                    <!--                    <GridViewColumn Header="Base Amount" DisplayMemberBinding="{Binding BaseAmount}" />-->
+                    <!--                    <GridViewColumn Header="Contra Amount" DisplayMemberBinding="{Binding BaseAmount}" />-->
+                    <GridViewColumn Header="Contract expiry" DisplayMemberBinding="{Binding ExpiryDate}" />
+                </GridView>
+            </ListView.View>
+
+        </ListView>
     </Grid>
 </Window>
