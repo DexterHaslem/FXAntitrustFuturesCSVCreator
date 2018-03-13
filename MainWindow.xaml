@@ -5,10 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FXAntiTrustFuturesCSVCreator"
         mc:Ignorable="d"
-        Title="FX Antitrust CSV tool (FUTURES ONLY)" Height="550" Width="925">
+        Title="FX Antitrust CSV tool (FUTURES ONLY)" Height="850" Width="1200">
     <Grid>
         <Grid.RowDefinitions>
-
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition />
@@ -19,12 +18,18 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
-        <Grid Grid.Row="0">
-            <TextBlock>Sticky values</TextBlock>
-        </Grid>
-
+        <StackPanel KeyboardNavigation.TabNavigation="None">
+            <StackPanel Orientation="Horizontal">
+                <Label>Name</Label>
+                <TextBox HorizontalAlignment="Right" Text="{Binding ActiveEditRow.Name}" Width="200" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label>Claimant ID</Label>
+                <TextBox HorizontalAlignment="Right" Text="{Binding ActiveEditRow.ClaimantId}" Width="200" />
+            </StackPanel>
+        </StackPanel>
         <!-- note: dont set datacontext to active edit row here, it'd be nice
-      but then we cant get to our ui commands -->
+          but then we cant get to our ui commands -->
         <UniformGrid Rows="2" Columns="10" Grid.Row="1" Margin="10">
             <TextBlock>Broker/FCM</TextBlock>
             <TextBlock>Exchange</TextBlock>
@@ -44,11 +49,19 @@
             <TextBox Text="{Binding ActiveEditRow.TradeRate}" />
             <TextBox Text="{Binding ActiveEditRow.NumberOfContracts}" />
             <TextBox Text="{Binding ActiveEditRow.BuySell}" />
+            <!--            <ComboBox SelectedValue="{Binding ActiveEditRow.BuySell}"-->
+            <!--                      SelectedValuePath="Text">-->
+            <!--                <ComboBoxItem>BUY</ComboBoxItem>-->
+            <!--                <ComboBoxItem>SELL</ComboBoxItem>-->
+            <!--            </ComboBox>-->
+
             <TextBox Text="{Binding ActiveEditRow.ExpiryDate}" />
             <Button Command="{Binding AddEditRowCommand}">Add</Button>
         </UniformGrid>
 
-        <ListView Grid.Row="2" ItemsSource="{Binding Rows}">
+        <ListView Grid.Row="2" ItemsSource="{Binding Rows}"
+                  KeyboardNavigation.TabNavigation="None"
+                  SelectedItem="{Binding SelectedRow}">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="ID" Width="30" DisplayMemberBinding="{Binding UiId}" />
@@ -59,7 +72,8 @@
                     <!--                    <GridViewColumn Header="Transaction ID" DisplayMemberBinding="{Binding TransactionId}" />-->
                     <GridViewColumn Header="Date" Width="100" DisplayMemberBinding="{Binding CalendarDate}" />
                     <GridViewColumn Header="Timezone" Width="150" DisplayMemberBinding="{Binding TimezoneIana}" />
-                    <GridViewColumn Header="Contract Code" Width="80" DisplayMemberBinding="{Binding ExchangeProductCode}" />
+                    <GridViewColumn Header="Contract Code" Width="80"
+                                    DisplayMemberBinding="{Binding ExchangeProductCode}" />
                     <GridViewColumn Header="Trade Rate" Width="100" DisplayMemberBinding="{Binding TradeRate}" />
                     <GridViewColumn Header="#Contracts" Width="80" DisplayMemberBinding="{Binding NumberOfContracts}" />
                     <!-- hard coded to usd -->
@@ -73,11 +87,11 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        <StackPanel Grid.Row="3" Orientation="Horizontal">
-            <Button Margin="5" Command="{Binding EditRowCommand}">Edit selected</Button>
-            <Button Margin="5" Command="{Binding CopyRowCommand}">Copy selected</Button>
-            <Button Margin="5" Command="{Binding DeleteRowCommand}">Delete selected</Button>
-            <Button Margin="5" Command="{Binding ExportCsvCommand}">Export to CSV</Button>
+        <StackPanel Grid.Row="3" Orientation="Horizontal" Height="50" KeyboardNavigation.TabNavigation="None">
+            <Button Margin="5" Width="150" Command="{Binding EditRowCommand}">Edit selected</Button>
+            <Button Margin="5" Width="150" Command="{Binding CopyRowCommand}">Copy selected</Button>
+            <Button Margin="5" Width="150" Command="{Binding DeleteRowCommand}">Delete selected</Button>
+            <Button Margin="5" Width="250" FontWeight="Bold" Command="{Binding ExportCsvCommand}">Export to CSV</Button>
         </StackPanel>
     </Grid>
 </Window>

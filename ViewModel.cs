@@ -16,61 +16,23 @@ namespace FXAntiTrustFuturesCSVCreator
         private string _stickyExchangeName;
         private string _stickyExchangeProductCode;
         private CsvRow _activeEditRow;
+        private CsvRow _selectedRow;
 
         public ObservableCollection<CsvRow> Rows { get; set; }
+
         public ICommand AddEditRowCommand { get; private set; }
+        public ICommand EditRowCommand { get; private set; }
+        public ICommand CopyRowCommand { get; private set; }
+        public ICommand DeleteRowCommand { get; private set; }
+        public ICommand ExportCsvCommand { get; private set; }
 
-        public string StickyName
+        public CsvRow SelectedRow
         {
-            get => _stickyName;
+            get => _selectedRow;
             set
             {
-                if (value == _stickyName) return;
-                _stickyName = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public string StickyClaimantId
-        {
-            get => _stickyClaimantId;
-            set
-            {
-                if (value == _stickyClaimantId) return;
-                _stickyClaimantId = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public string StickyBrokerName
-        {
-            get => _stickyBrokerName;
-            set
-            {
-                if (value == _stickyBrokerName) return;
-                _stickyBrokerName = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public string StickyExchangeName
-        {
-            get => _stickyExchangeName;
-            set
-            {
-                if (value == _stickyExchangeName) return;
-                _stickyExchangeName = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public string StickyExchangeProductCode
-        {
-            get => _stickyExchangeProductCode;
-            set
-            {
-                if (value == _stickyExchangeProductCode) return;
-                _stickyExchangeProductCode = value;
+                if (Equals(value, _selectedRow)) return;
+                _selectedRow = value;
                 OnPropertyChanged();
             }
         }
@@ -100,9 +62,51 @@ namespace FXAntiTrustFuturesCSVCreator
         {
             Rows = new ObservableCollection<CsvRow>();
             ActiveEditRow = new CsvRow();
-            AddEditRowCommand = new RoutedCommand("AddEditRow", typeof(MainWindow));
+            var myType = typeof(MainWindow);
+            AddEditRowCommand = new RoutedCommand("AddEditRow", myType);
+            EditRowCommand = new RoutedCommand("EditRow", myType);
+            CopyRowCommand = new RoutedCommand("CopyRow", myType);
+            DeleteRowCommand = new RoutedCommand("DeleteRow", myType);
+            ExportCsvCommand = new RoutedCommand("ExportCsv", myType);
 
-            owner.CommandBindings.Add(new CommandBinding(AddEditRowCommand, OnAddEditRow));
+            void CanAddNewRowExec(object sender, CanExecuteRoutedEventArgs e)
+            {
+                // wew lawd, do some basic checking here, this whol thing is hackery
+                e.CanExecute = !string.IsNullOrWhiteSpace(ActiveEditRow?.Name) && 
+                               !string.IsNullOrWhiteSpace(ActiveEditRow.ClaimantId) && 
+                               !string.IsNullOrWhiteSpace(ActiveEditRow.ExchangeProductCode) && 
+                               !string.IsNullOrWhiteSpace(ActiveEditRow.ExchangeName) && 
+                               (ActiveEditRow.BuySell == "BUY" || ActiveEditRow.BuySell == "SELL");
+            }
+
+            owner.CommandBindings.Add(new CommandBinding(AddEditRowCommand, OnAddEditRow, CanAddNewRowExec));
+
+            void CanExistingExec(object sender, CanExecuteRoutedEventArgs args)
+            {
+                args.CanExecute = this.SelectedRow != null;
+            }
+
+            owner.CommandBindings.Add(new CommandBinding(EditRowCommand, OnEditExistingRow, CanExistingExec));
+            owner.CommandBindings.Add(new CommandBinding(CopyRowCommand, OnCopyExistingRow, CanExistingExec));
+            owner.CommandBindings.Add(new CommandBinding(DeleteRowCommand, OnDeleteExistingRow, CanExistingExec));
+            owner.CommandBindings.Add(new CommandBinding(ExportCsvCommand, OnExportCsv,
+                (o, e) => e.CanExecute = Rows.Count > 0));
+        }
+
+        private void OnExportCsv(object sender, ExecutedRoutedEventArgs e)
+        {
+        }
+
+        private void OnDeleteExistingRow(object sender, ExecutedRoutedEventArgs e)
+        {
+        }
+
+        private void OnCopyExistingRow(object sender, ExecutedRoutedEventArgs e)
+        {
+        }
+
+        private void OnEditExistingRow(object sender, ExecutedRoutedEventArgs e)
+        {
         }
 
         private void OnAddEditRow(object sender, ExecutedRoutedEventArgs e)

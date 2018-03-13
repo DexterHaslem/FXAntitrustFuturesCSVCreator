@@ -37,7 +37,7 @@ namespace FXAntiTrustFuturesCSVCreator
         //private DateTime? _tradeTimestamp;
         private string _timezoneIana;
         private string _exchangeProductCode;
-        private string _tradeRate;
+        private float _tradeRate;
         private int _numberOfContracts;
         private string _baseCurrency;
         private string _quotedCurrency;
@@ -194,7 +194,7 @@ namespace FXAntiTrustFuturesCSVCreator
             }
         }
 
-        public string TradeRate
+        public float TradeRate
         {
             get => _tradeRate;
             set
@@ -310,7 +310,7 @@ namespace FXAntiTrustFuturesCSVCreator
                     "", // trade timestamp
                     TimezoneIana,
                     ExchangeProductCode,
-                    TradeRate,
+                    TradeRate.ToString("C"),
                     NumberOfContracts.ToString("D"),
                     BaseCurrency,
                     QuotedCurrency,
