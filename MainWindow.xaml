@@ -12,6 +12,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
@@ -19,32 +20,64 @@
         </Grid.ColumnDefinitions>
 
         <Grid Grid.Row="0">
+            <TextBlock>Sticky values</TextBlock>
         </Grid>
+
+        <!-- note: dont set datacontext to active edit row here, it'd be nice
+      but then we cant get to our ui commands -->
+        <UniformGrid Rows="2" Columns="10" Grid.Row="1" Margin="10">
+            <TextBlock>Broker/FCM</TextBlock>
+            <TextBlock>Exchange</TextBlock>
+            <TextBlock ToolTipService.ToolTip="yyyy-MM-dd">Date</TextBlock>
+            <TextBlock>Timezone</TextBlock>
+            <TextBlock>Contract</TextBlock>
+            <TextBlock>Trade Rate</TextBlock>
+            <TextBlock>#Contracts</TextBlock>
+            <TextBlock>Buy/Sell</TextBlock>
+            <TextBlock ToolTipService.ToolTip="yyyy-MM">Expiration</TextBlock>
+            <TextBlock>Add Row</TextBlock>
+            <TextBox Text="{Binding ActiveEditRow.BrokerFcm}" />
+            <TextBox Text="{Binding ActiveEditRow.ExchangeName}" />
+            <TextBox Text="{Binding ActiveEditRow.CalendarDate}" />
+            <TextBox Text="{Binding ActiveEditRow.TimezoneIana}" />
+            <TextBox Text="{Binding ActiveEditRow.ExchangeProductCode}" />
+            <TextBox Text="{Binding ActiveEditRow.TradeRate}" />
+            <TextBox Text="{Binding ActiveEditRow.NumberOfContracts}" />
+            <TextBox Text="{Binding ActiveEditRow.BuySell}" />
+            <TextBox Text="{Binding ActiveEditRow.ExpiryDate}" />
+            <Button Command="{Binding AddEditRowCommand}">Add</Button>
+        </UniformGrid>
 
         <ListView Grid.Row="2" ItemsSource="{Binding Rows}">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" />
-                    <GridViewColumn Header="Claimant ID" DisplayMemberBinding="{Binding ClaimantId}" />
-                    <GridViewColumn Header="Broker/FCM" DisplayMemberBinding="{Binding BrokerFcm}" />
-                    <GridViewColumn Header="Exchange" DisplayMemberBinding="{Binding ExchangeName}" />
+                    <GridViewColumn Header="ID" Width="30" DisplayMemberBinding="{Binding UiId}" />
+                    <GridViewColumn Header="Name" Width="60" DisplayMemberBinding="{Binding Name}" />
+                    <GridViewColumn Header="Claimant ID" Width="100" DisplayMemberBinding="{Binding ClaimantId}" />
+                    <GridViewColumn Header="Broker/FCM" Width="150" DisplayMemberBinding="{Binding BrokerFcm}" />
+                    <GridViewColumn Header="Exchange" Width="100" DisplayMemberBinding="{Binding ExchangeName}" />
                     <!--                    <GridViewColumn Header="Transaction ID" DisplayMemberBinding="{Binding TransactionId}" />-->
-                    <GridViewColumn Header="Date" DisplayMemberBinding="{Binding CalendarDate}" />
-                    <GridViewColumn Header="Timezone" DisplayMemberBinding="{Binding TimezoneIana}" />
-                    <GridViewColumn Header="Contract Code" DisplayMemberBinding="{Binding ExchangeProductCode}" />
-                    <GridViewColumn Header="Trade Rate" DisplayMemberBinding="{Binding TradeRate}" />
-                    <GridViewColumn Header="#Contracts" DisplayMemberBinding="{Binding NumberOfContracts}" />
+                    <GridViewColumn Header="Date" Width="100" DisplayMemberBinding="{Binding CalendarDate}" />
+                    <GridViewColumn Header="Timezone" Width="150" DisplayMemberBinding="{Binding TimezoneIana}" />
+                    <GridViewColumn Header="Contract Code" Width="80" DisplayMemberBinding="{Binding ExchangeProductCode}" />
+                    <GridViewColumn Header="Trade Rate" Width="100" DisplayMemberBinding="{Binding TradeRate}" />
+                    <GridViewColumn Header="#Contracts" Width="80" DisplayMemberBinding="{Binding NumberOfContracts}" />
                     <!-- hard coded to usd -->
                     <!--                    <GridViewColumn Header="Base Currency" DisplayMemberBinding="{Binding BaseCurrency}" />-->
                     <!--                    <GridViewColumn Header="Quoted Currency" DisplayMemberBinding="{Binding QuotedCurrency}" />-->
-                    <GridViewColumn Header="Buy/Sell" DisplayMemberBinding="{Binding BuySell}" />
+                    <GridViewColumn Header="Buy/Sell" Width="60" DisplayMemberBinding="{Binding BuySell}" />
                     <!-- calculated -->
                     <!--                    <GridViewColumn Header="Base Amount" DisplayMemberBinding="{Binding BaseAmount}" />-->
                     <!--                    <GridViewColumn Header="Contra Amount" DisplayMemberBinding="{Binding BaseAmount}" />-->
                     <GridViewColumn Header="Contract expiry" DisplayMemberBinding="{Binding ExpiryDate}" />
                 </GridView>
             </ListView.View>
-
         </ListView>
+        <StackPanel Grid.Row="3" Orientation="Horizontal">
+            <Button Margin="5" Command="{Binding EditRowCommand}">Edit selected</Button>
+            <Button Margin="5" Command="{Binding CopyRowCommand}">Copy selected</Button>
+            <Button Margin="5" Command="{Binding DeleteRowCommand}">Delete selected</Button>
+            <Button Margin="5" Command="{Binding ExportCsvCommand}">Export to CSV</Button>
+        </StackPanel>
     </Grid>
 </Window>

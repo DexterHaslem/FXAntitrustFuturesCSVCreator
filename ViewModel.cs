@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace FXAntiTrustFuturesCSVCreator
 {
@@ -17,7 +18,8 @@ namespace FXAntiTrustFuturesCSVCreator
         private CsvRow _activeEditRow;
 
         public ObservableCollection<CsvRow> Rows { get; set; }
-        
+        public ICommand AddEditRowCommand { get; private set; }
+
         public string StickyName
         {
             get => _stickyName;
@@ -86,17 +88,26 @@ namespace FXAntiTrustFuturesCSVCreator
 
         public void SaveEditRow()
         {
+            var newRow = new CsvRow(ActiveEditRow);
             Rows.Add(ActiveEditRow);
             // 'sticky' fields maintain values after a row entered
             // a better way to do this would be with a sticky attribute
             // and checking reflection after row added, but this is a throw away tool
-            var newRow = new CsvRow();
             ActiveEditRow = newRow;
         }
 
         public ViewModel(MainWindow owner)
         {
             Rows = new ObservableCollection<CsvRow>();
+            ActiveEditRow = new CsvRow();
+            AddEditRowCommand = new RoutedCommand("AddEditRow", typeof(MainWindow));
+
+            owner.CommandBindings.Add(new CommandBinding(AddEditRowCommand, OnAddEditRow));
+        }
+
+        private void OnAddEditRow(object sender, ExecutedRoutedEventArgs e)
+        {
+            SaveEditRow();
         }
     }
 }
