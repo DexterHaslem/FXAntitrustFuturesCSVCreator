@@ -9,7 +9,7 @@ using FXAntiTrustFuturesCSVCreator.Annotations;
 
 namespace FXAntiTrustFuturesCSVCreator
 {
-    internal class NotifyPropertyChangedBase : INotifyPropertyChanged
+    public class NotifyPropertyChangedBase : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 

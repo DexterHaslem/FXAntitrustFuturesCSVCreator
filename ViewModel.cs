@@ -1,22 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
+using System.Xml;
+using System.Xml.Serialization;
+using Microsoft.Win32;
 
 namespace FXAntiTrustFuturesCSVCreator
 {
     internal class ViewModel : NotifyPropertyChangedBase
     {
-        private string _stickyName;
-        private string _stickyClaimantId;
-        private string _stickyBrokerName;
-        private string _stickyExchangeName;
-        private string _stickyExchangeProductCode;
+        private const string BackupFile = "Rows.xml";
+
         private CsvRow _activeEditRow;
         private CsvRow _selectedRow;
+        private readonly MainWindow _owner;
 
         public ObservableCollection<CsvRow> Rows { get; set; }
 
@@ -60,6 +63,7 @@ namespace FXAntiTrustFuturesCSVCreator
 
         public ViewModel(MainWindow owner)
         {
+            _owner = owner;
             Rows = new ObservableCollection<CsvRow>();
             ActiveEditRow = new CsvRow();
             var myType = typeof(MainWindow);
@@ -72,10 +76,10 @@ namespace FXAntiTrustFuturesCSVCreator
             void CanAddNewRowExec(object sender, CanExecuteRoutedEventArgs e)
             {
                 // wew lawd, do some basic checking here, this whol thing is hackery
-                e.CanExecute = !string.IsNullOrWhiteSpace(ActiveEditRow?.Name) && 
-                               !string.IsNullOrWhiteSpace(ActiveEditRow.ClaimantId) && 
-                               !string.IsNullOrWhiteSpace(ActiveEditRow.ExchangeProductCode) && 
-                               !string.IsNullOrWhiteSpace(ActiveEditRow.ExchangeName) && 
+                e.CanExecute = !string.IsNullOrWhiteSpace(ActiveEditRow?.Name) &&
+                               !string.IsNullOrWhiteSpace(ActiveEditRow.ClaimantId) &&
+                               !string.IsNullOrWhiteSpace(ActiveEditRow.ExchangeProductCode) &&
+                               !string.IsNullOrWhiteSpace(ActiveEditRow.ExchangeName) &&
                                (ActiveEditRow.BuySell == "BUY" || ActiveEditRow.BuySell == "SELL");
             }
 
@@ -91,27 +95,75 @@ namespace FXAntiTrustFuturesCSVCreator
             owner.CommandBindings.Add(new CommandBinding(DeleteRowCommand, OnDeleteExistingRow, CanExistingExec));
             owner.CommandBindings.Add(new CommandBinding(ExportCsvCommand, OnExportCsv,
                 (o, e) => e.CanExecute = Rows.Count > 0));
+
+            owner.Loaded += OnLoaded;
+        }
+
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            Restore();
+            this._owner.Loaded -= OnLoaded;
+        }
+
+        private string GetCsvString()
+        {
+            var csvFile = string.Join(Environment.NewLine, new[] {CsvRow.HeaderRow()}
+                .Concat(Rows.Select(r => r.ToCsv())));
+            return csvFile;
         }
 
         private void OnExportCsv(object sender, ExecutedRoutedEventArgs e)
         {
+            var sfd = new SaveFileDialog();
+            sfd.Filter = "CSV File (*.csv)|*.csv";
+            var result = sfd.ShowDialog(_owner);
+            if (result == true)
+                File.WriteAllText(sfd.FileName, GetCsvString());
+        }
+
+        private void Backup()
+        {
+            var ser = new XmlSerializer(typeof(CsvRow[]));
+            using (var writer = new XmlTextWriter(BackupFile, Encoding.Unicode) {Formatting = Formatting.Indented})
+                ser.Serialize(writer, Rows.ToArray());
+        }
+
+        private void Restore()
+        {
+            var deser = new XmlSerializer(typeof(CsvRow[]));
+            using (var stream = File.OpenRead(BackupFile))
+            {
+                var restoredRows = (CsvRow[]) deser.Deserialize(stream);
+                Rows.Clear();
+                foreach (var restoredRow in restoredRows)
+                {
+                    Rows.Add(restoredRow);
+                }
+            }
         }
 
         private void OnDeleteExistingRow(object sender, ExecutedRoutedEventArgs e)
         {
+            Backup();
+            Rows.Remove(SelectedRow);
         }
 
         private void OnCopyExistingRow(object sender, ExecutedRoutedEventArgs e)
         {
+            Backup();
+            ActiveEditRow = new CsvRow(SelectedRow);
+            //Rows.Add(ActiveEditRow);
         }
 
         private void OnEditExistingRow(object sender, ExecutedRoutedEventArgs e)
         {
+            Backup();
         }
 
         private void OnAddEditRow(object sender, ExecutedRoutedEventArgs e)
         {
             SaveEditRow();
+            Backup();
         }
     }
 }

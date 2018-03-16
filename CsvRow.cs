@@ -23,7 +23,7 @@ namespace FXAntiTrustFuturesCSVCreator
     }
 
     // quick and dirty
-    internal class CsvRow : NotifyPropertyChangedBase
+    public class CsvRow : NotifyPropertyChangedBase
     {
         private string _name;
         private string _claimantId;
@@ -64,11 +64,11 @@ namespace FXAntiTrustFuturesCSVCreator
             ExchangeProductCode = other.ExchangeProductCode;
             TradeRate = other.TradeRate;
             NumberOfContracts = other.NumberOfContracts;
-            BaseCurrency = other.BaseCurrency;
-            QuotedCurrency = other.QuotedCurrency;
+            //BaseCurrency = other.BaseCurrency;
+            //QuotedCurrency = other.QuotedCurrency;
             BuySell = other.BuySell;
-            BaseAmount = other.BaseAmount;
-            ContraAmount = other.ContraAmount;
+            //BaseAmount = other.BaseAmount;
+            //ContraAmount = other.ContraAmount;
             ExpiryDate = other.ExpiryDate;
             UiId = other.UiId + 1;
         }
@@ -216,27 +216,27 @@ namespace FXAntiTrustFuturesCSVCreator
             }
         }
 
-        public string BaseCurrency
-        {
-            get => _baseCurrency;
-            set
-            {
-                if (value == _baseCurrency) return;
-                _baseCurrency = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public string QuotedCurrency
-        {
-            get => _quotedCurrency;
-            set
-            {
-                if (value == _quotedCurrency) return;
-                _quotedCurrency = value;
-                OnPropertyChanged();
-            }
-        }
+//        public string BaseCurrency
+//        {
+//            get => _baseCurrency;
+//            set
+//            {
+//                if (value == _baseCurrency) return;
+//                _baseCurrency = value;
+//                OnPropertyChanged();
+//            }
+//        }
+//
+//        public string QuotedCurrency
+//        {
+//            get => _quotedCurrency;
+//            set
+//            {
+//                if (value == _quotedCurrency) return;
+//                _quotedCurrency = value;
+//                OnPropertyChanged();
+//            }
+//        }
 
         public string BuySell
         {
@@ -249,27 +249,27 @@ namespace FXAntiTrustFuturesCSVCreator
             }
         }
 
-        public float BaseAmount
-        {
-            get => _baseAmount;
-            set
-            {
-                if (value.Equals(_baseAmount)) return;
-                _baseAmount = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public float ContraAmount
-        {
-            get => _contraAmount;
-            set
-            {
-                if (value.Equals(_contraAmount)) return;
-                _contraAmount = value;
-                OnPropertyChanged();
-            }
-        }
+//        public float BaseAmount
+//        {
+//            get => _baseAmount;
+//            set
+//            {
+//                if (value.Equals(_baseAmount)) return;
+//                _baseAmount = value;
+//                OnPropertyChanged();
+//            }
+//        }
+//
+//        public float ContraAmount
+//        {
+//            get => _contraAmount;
+//            set
+//            {
+//                if (value.Equals(_contraAmount)) return;
+//                _contraAmount = value;
+//                OnPropertyChanged();
+//            }
+//        }
 
         public string ExpiryDate
         {
@@ -310,14 +310,14 @@ namespace FXAntiTrustFuturesCSVCreator
                     "", // trade timestamp
                     TimezoneIana,
                     ExchangeProductCode,
-                    TradeRate.ToString("C"),
+                    TradeRate.ToString("#.00000"),
                     NumberOfContracts.ToString("D"),
-                    BaseCurrency,
-                    QuotedCurrency,
+                    "USD",
+                    "USD",
                     //BuySell == Side.Buy ? "BUY" : "SELL",
                     BuySell,
-                    BaseAmount.ToString("C"),
-                    ContraAmount.ToString(""),
+                    (TradeRate * NumberOfContracts).ToString("#.00000"),
+                    "",//ContraAmount.ToString(""),
                     ExpiryDate,
                 });
         }
