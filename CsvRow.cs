@@ -35,15 +35,18 @@ namespace FXAntiTrustFuturesCSVCreator
         private string _calendarDate;
 
         //private DateTime? _tradeTimestamp;
-        private string _timezoneIana;
+        //private string _timezoneIana;
         private string _exchangeProductCode;
         private float _tradeRate;
+
         private int _numberOfContracts;
-        private string _baseCurrency;
-        private string _quotedCurrency;
+
+        //private string _baseCurrency;
+        //private string _quotedCurrency;
         private string _buySell;
-        private float _baseAmount;
-        private float _contraAmount;
+
+        //private float _baseAmount;
+        //private float _contraAmount;
         private string _expiryDate;
         private int _uiId;
 
@@ -53,6 +56,9 @@ namespace FXAntiTrustFuturesCSVCreator
 
         public CsvRow(CsvRow other)
         {
+            if (other == null)
+                return;
+
             Name = other.Name;
             ClaimantId = other.ClaimantId;
             BrokerFcm = other.BrokerFcm;
@@ -60,7 +66,7 @@ namespace FXAntiTrustFuturesCSVCreator
             TransactionId = other.TransactionId;
             FxTransactionType = other.FxTransactionType;
             CalendarDate = other.CalendarDate;
-            TimezoneIana = other.TimezoneIana;
+            //TimezoneIana = other.TimezoneIana;
             ExchangeProductCode = other.ExchangeProductCode;
             TradeRate = other.TradeRate;
             NumberOfContracts = other.NumberOfContracts;
@@ -172,16 +178,16 @@ namespace FXAntiTrustFuturesCSVCreator
 //            }
 //        }
 
-        public string TimezoneIana
-        {
-            get => _timezoneIana;
-            set
-            {
-                if (value == _timezoneIana) return;
-                _timezoneIana = value;
-                OnPropertyChanged();
-            }
-        }
+//        public string TimezoneIana
+//        {
+//            get => _timezoneIana;
+//            set
+//            {
+//                if (value == _timezoneIana) return;
+//                _timezoneIana = value;
+//                OnPropertyChanged();
+//            }
+//        }
 
         public string ExchangeProductCode
         {
@@ -297,6 +303,8 @@ namespace FXAntiTrustFuturesCSVCreator
             // NOTE: expiration date format is not specified in documents. woohoo!
             // lets just match
             //var expiryDateStr = ExpiryDate.ToString("yyyy-MM");
+
+            var tradeRateStr = TradeRate.ToString("#.00000");
             return string.Join(",",
                 new string[]
                 {
@@ -308,16 +316,16 @@ namespace FXAntiTrustFuturesCSVCreator
                     "future",
                     CalendarDate,
                     "", // trade timestamp
-                    TimezoneIana,
+                    "America/Chicago", // TimezoneIana, the IANA example in pdf is deprecated go figure
                     ExchangeProductCode,
-                    TradeRate.ToString("#.00000"),
+                    tradeRateStr,
                     NumberOfContracts.ToString("D"),
                     "USD",
                     "USD",
                     //BuySell == Side.Buy ? "BUY" : "SELL",
                     BuySell,
                     (TradeRate * NumberOfContracts).ToString("#.00000"),
-                    "",//ContraAmount.ToString(""),
+                    "", //ContraAmount.ToString(""),
                     ExpiryDate,
                 });
         }

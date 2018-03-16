@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Xml;
 using System.Xml.Serialization;
@@ -58,6 +61,7 @@ namespace FXAntiTrustFuturesCSVCreator
             // 'sticky' fields maintain values after a row entered
             // a better way to do this would be with a sticky attribute
             // and checking reflection after row added, but this is a throw away tool
+            newRow.BuySell = ActiveEditRow.BuySell == "BUY" ? "SELL" : "BUY"; // HACK :(
             ActiveEditRow = newRow;
         }
 
@@ -97,25 +101,31 @@ namespace FXAntiTrustFuturesCSVCreator
                 (o, e) => e.CanExecute = Rows.Count > 0));
 
             owner.Loaded += OnLoaded;
+            owner.Closing += OnClosing;
+        }
+
+        private void OnClosing(object sender, CancelEventArgs e)
+        {
+            Backup();
+            _owner.Closing -= OnClosing;
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             Restore();
-            this._owner.Loaded -= OnLoaded;
+            _owner.Loaded -= OnLoaded;
         }
 
         private string GetCsvString()
         {
-            var csvFile = string.Join(Environment.NewLine, new[] {CsvRow.HeaderRow()}
+            var csv = string.Join(Environment.NewLine, new[] {CsvRow.HeaderRow()}
                 .Concat(Rows.Select(r => r.ToCsv())));
-            return csvFile;
+            return csv;
         }
 
         private void OnExportCsv(object sender, ExecutedRoutedEventArgs e)
         {
-            var sfd = new SaveFileDialog();
-            sfd.Filter = "CSV File (*.csv)|*.csv";
+            var sfd = new SaveFileDialog {Filter = "CSV File (*.csv)|*.csv"};
             var result = sfd.ShowDialog(_owner);
             if (result == true)
                 File.WriteAllText(sfd.FileName, GetCsvString());
@@ -140,30 +150,42 @@ namespace FXAntiTrustFuturesCSVCreator
                     Rows.Add(restoredRow);
                 }
             }
+
+            // do this primarily for sticky name / claimant id to transfer
+            ActiveEditRow = new CsvRow(Rows.LastOrDefault());
         }
 
         private void OnDeleteExistingRow(object sender, ExecutedRoutedEventArgs e)
         {
-            Backup();
             Rows.Remove(SelectedRow);
         }
 
         private void OnCopyExistingRow(object sender, ExecutedRoutedEventArgs e)
         {
-            Backup();
             ActiveEditRow = new CsvRow(SelectedRow);
-            //Rows.Add(ActiveEditRow);
         }
 
         private void OnEditExistingRow(object sender, ExecutedRoutedEventArgs e)
         {
-            Backup();
+            ActiveEditRow = SelectedRow;
         }
 
         private void OnAddEditRow(object sender, ExecutedRoutedEventArgs e)
         {
             SaveEditRow();
-            Backup();
+        }
+    }
+
+    public class BuySellFromBoolConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return value as string == "BUY" ? true : false;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (bool) value ? "BUY" : "SELL";
         }
     }
 }

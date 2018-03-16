@@ -4,8 +4,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FXAntiTrustFuturesCSVCreator"
-        mc:Ignorable="d"
+        mc:Ignorable="d" FontSize="18"
         Title="FX Antitrust CSV tool (FUTURES ONLY)" Height="850" Width="1200">
+    <Window.Resources>
+      <local:BuySellFromBoolConverter x:Key="BuySellFromBoolConverter" />
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -30,33 +33,32 @@
         </StackPanel>
         <!-- note: dont set datacontext to active edit row here, it'd be nice
           but then we cant get to our ui commands -->
-        <UniformGrid Rows="2" Columns="10" Grid.Row="1" Margin="10">
+        <UniformGrid Rows="2" Columns="9" Grid.Row="1" Margin="10">
             <TextBlock>Broker/FCM</TextBlock>
             <TextBlock>Exchange</TextBlock>
             <TextBlock ToolTipService.ToolTip="yyyy-MM-dd">Date</TextBlock>
-            <TextBlock>Timezone</TextBlock>
-            <TextBlock>Contract</TextBlock>
-            <TextBlock>Trade Rate</TextBlock>
-            <TextBlock>#Contracts</TextBlock>
-            <TextBlock>Buy/Sell</TextBlock>
+<!--            <TextBlock>Timezone</TextBlock>-->
             <TextBlock ToolTipService.ToolTip="yyyy-MM">Expiration</TextBlock>
+            <TextBlock>Contract</TextBlock>
+            <TextBlock>#Contracts</TextBlock>
+            <TextBlock>Trade Rate</TextBlock>
+            <TextBlock>Buy?</TextBlock>
             <TextBlock>Add Row</TextBlock>
-            <TextBox Text="{Binding ActiveEditRow.BrokerFcm}" />
-            <TextBox Text="{Binding ActiveEditRow.ExchangeName}" />
-            <TextBox Text="{Binding ActiveEditRow.CalendarDate}" />
-            <TextBox Text="{Binding ActiveEditRow.TimezoneIana}" />
-            <TextBox Text="{Binding ActiveEditRow.ExchangeProductCode}" />
-            <TextBox Text="{Binding ActiveEditRow.TradeRate}" />
-            <TextBox Text="{Binding ActiveEditRow.NumberOfContracts}" />
-            <TextBox Text="{Binding ActiveEditRow.BuySell}" />
+            <TextBox Text="{Binding ActiveEditRow.BrokerFcm, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBox Text="{Binding ActiveEditRow.ExchangeName, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBox Text="{Binding ActiveEditRow.CalendarDate, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBox Text="{Binding ActiveEditRow.ExpiryDate, UpdateSourceTrigger=PropertyChanged}" />
+<!--            <TextBox Text="{Binding ActiveEditRow.TimezoneIana}" />-->
+            <TextBox Text="{Binding ActiveEditRow.ExchangeProductCode, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBox Text="{Binding ActiveEditRow.NumberOfContracts, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBox Text="{Binding ActiveEditRow.TradeRate, StringFormat={}{0:#.00000}, UpdateSourceTrigger=PropertyChanged}" />
+            <CheckBox IsChecked="{Binding ActiveEditRow.BuySell, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BuySellFromBoolConverter}}"/>
             <!--            <ComboBox SelectedValue="{Binding ActiveEditRow.BuySell}"-->
             <!--                      SelectedValuePath="Text">-->
             <!--                <ComboBoxItem>BUY</ComboBoxItem>-->
             <!--                <ComboBoxItem>SELL</ComboBoxItem>-->
             <!--            </ComboBox>-->
-
-            <TextBox Text="{Binding ActiveEditRow.ExpiryDate}" />
-            <Button Command="{Binding AddEditRowCommand}">Add</Button>
+            <Button Command="{Binding AddEditRowCommand}" FontWeight="Bold">Add</Button>
         </UniformGrid>
 
         <ListView Grid.Row="2" ItemsSource="{Binding Rows}"
@@ -71,10 +73,10 @@
                     <GridViewColumn Header="Exchange" Width="100" DisplayMemberBinding="{Binding ExchangeName}" />
                     <!--                    <GridViewColumn Header="Transaction ID" DisplayMemberBinding="{Binding TransactionId}" />-->
                     <GridViewColumn Header="Date" Width="100" DisplayMemberBinding="{Binding CalendarDate}" />
-                    <GridViewColumn Header="Timezone" Width="150" DisplayMemberBinding="{Binding TimezoneIana}" />
+<!--                    <GridViewColumn Header="Timezone" Width="150" DisplayMemberBinding="{Binding TimezoneIana}" />-->
                     <GridViewColumn Header="Contract Code" Width="80"
                                     DisplayMemberBinding="{Binding ExchangeProductCode}" />
-                    <GridViewColumn Header="Trade Rate" Width="100" DisplayMemberBinding="{Binding TradeRate}" />
+                    <GridViewColumn Header="Trade Rate" Width="100" DisplayMemberBinding="{Binding TradeRate, StringFormat={}{0:#.00000}}" />
                     <GridViewColumn Header="#Contracts" Width="80" DisplayMemberBinding="{Binding NumberOfContracts}" />
                     <!-- hard coded to usd -->
                     <!--                    <GridViewColumn Header="Base Currency" DisplayMemberBinding="{Binding BaseCurrency}" />-->
